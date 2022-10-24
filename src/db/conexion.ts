@@ -1,7 +1,7 @@
 import {Sequelize} from "sequelize";
 
 
-export const db = new Sequelize('usuario', 'root', '', {
+export const db = new Sequelize('proyectocomics', 'root', '', {
     host: 'localhost',
     dialect: "mysql"
   });

@@ -1,4 +1,5 @@
 import { usuarios } from "../models/auth";
+import jwt from "jsonwebtoken";
 
 export const getUser = async (req: any, res: any) => {
   try {
@@ -36,7 +37,14 @@ export const loginUser = async (req: any, res: any) => {
         where: { password },
       });
       if (pass) {
-        res.status(200).json({ ok: true, user });
+        const user = {
+          nombre: req.body.nombre,
+          password: req.body.password,
+        };
+
+        let token = jwt.sign(user, "secretKey");
+        res.json(token);
+
       } else {
         res.status(404).json({ message: "No existe ese usuario " });
       }
@@ -65,11 +73,10 @@ export const createUser = async (req: any, res: any) => {
 export const changeUser = async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const { nombre, password, avatar } = req.body;
+    const { nombre, password } = req.body;
     const user: any = await usuarios.findByPk(id);
     user.nombre = nombre;
     user.password = password;
-    user.avatar = avatar;
     user.save();
     res.status(200).json({ ok: true, user });
   } catch (error) {
@@ -80,13 +87,46 @@ export const changeUser = async (req: any, res: any) => {
 export const deleteUser = async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    await usuarios.destroy({
-      where: {
-        id,
-      },
+    const comic = await usuarios.findOne({
+      where: { id },
     });
-    res.sendStatus(204);
+
+    if (!comic) {
+      res.status(404).json({ message: "No existe este usuario " });
+    } else {
+      await usuarios.destroy({
+        where: {
+          id,
+        },
+      });
+      res.status(200).json({ message: "usuario eliminado correctamente" });
+    }  
   } catch (error) {
     res.status(500).json({ error: error });
   }
 };
+
+function check(token: any, req: any, res: any) {
+  try {
+    var decoded = jwt.verify(token, "wrong-secret");
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
+function checktoken(token: any, req: any, res: any) {
+  try {
+    var decoded = jwt.verify(token, "wrong-secret");
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
+/*export const logout = async (req: any, res: any) => {
+  try {
+    req.session.destroy();
+    res.status(200).json({ ok: true });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};*/
