@@ -1,5 +1,6 @@
 import { usuarios } from "../models/auth";
 import jwt from "jsonwebtoken";
+const fs = require("fs");
 
 export const getUser = async (req: any, res: any) => {
   try {
@@ -13,14 +14,74 @@ export const getUser = async (req: any, res: any) => {
 export const getUserById = async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const user = await usuarios.findOne({
+    const user: any = await usuarios.findOne({
       where: { id },
     });
     if (!user) {
       res.status(404).json({ message: "No existe ese usuario " });
     } else {
+      user.imagen = fs.readFileSync(
+        "./../src/imagenes/perfil/" + user.imagen,
+        "base64"
+      );
+      console.log(user.imagen);
       res.status(200).json({ ok: true, user });
     }
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
+export const getMyUser = async (req: any, res: any) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    let user: any = jwt.decode(token);
+    console.log(user);
+    user = await usuarios.findOne({
+      where: { nombre: user.nombre, password: user.password },
+    });
+    console.log(user);
+    user.imagen = fs.readFileSync(
+      "./../src/imagenes/perfil/" + user.imagen,
+      "base64"
+    );
+    console.log(user.imagen);
+    res.status(200).json({ ok: true, user });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
+export const changeUser = async (req: any, res: any) => {
+  try {
+    // const { id } = req.params;
+    // const user: any = await usuarios.findByPk(id);
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    let user: any = jwt.decode(token);
+    console.log(user);
+    user = await usuarios.findOne({
+      where: { nombre: user.nombre, password: user.password },
+    });
+    const { nombre, password, imagen } = req.body;
+    let data = imagen.replace(/^data:image\/\w+;base64,/, "");
+    let buf = new Buffer(data, "base64");
+    let nombreImagen = new Date().getTime() + ".png";
+    fs.writeFile(
+      "./../src/imagenes/perfil/" + nombreImagen,
+      buf,
+      function (err: any, result: any) {
+        if (err) {
+          console.log("error", err);
+        }
+      }
+    );
+    user.nombre = nombre;
+    user.password = password;
+    user.imagen = nombreImagen;
+    user.save();
+    res.status(200).json({ ok: true, user });
   } catch (error) {
     res.status(500).json({ error: error });
   }
@@ -43,8 +104,7 @@ export const loginUser = async (req: any, res: any) => {
         };
 
         let token = jwt.sign(user, "secretKey");
-        res.json(token);
-
+        res.status(200).json({ ok: true, token });
       } else {
         res.status(404).json({ message: "No existe ese usuario " });
       }
@@ -58,27 +118,28 @@ export const loginUser = async (req: any, res: any) => {
 
 export const createUser = async (req: any, res: any) => {
   try {
-    const { nombre, password } = req.body;
-
+    let { nombre, password, imagen } = req.body;
+    let data = imagen.replace(/^data:image\/\w+;base64,/, "");
+    let buf = new Buffer(data, "base64");
+    let nombreImagen = new Date().getTime() + ".png";
+    fs.writeFile(
+      "./../src/imagenes/perfil/" + nombreImagen,
+      buf,
+      function (err: any, result: any) {
+        if (err) {
+          console.log("error", err);
+        }
+      }
+    );
+    imagen = nombreImagen;
     const nuevoUsuario = await usuarios.create({
       nombre,
       password,
+      imagen,
     });
-    res.status(200).json({ ok: true, nuevoUsuario });
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-};
+    console.log(imagen);
 
-export const changeUser = async (req: any, res: any) => {
-  try {
-    const { id } = req.params;
-    const { nombre, password } = req.body;
-    const user: any = await usuarios.findByPk(id);
-    user.nombre = nombre;
-    user.password = password;
-    user.save();
-    res.status(200).json({ ok: true, user });
+    res.status(200).json({ ok: true, nuevoUsuario });
   } catch (error) {
     res.status(500).json({ error: error });
   }
@@ -100,27 +161,11 @@ export const deleteUser = async (req: any, res: any) => {
         },
       });
       res.status(200).json({ message: "usuario eliminado correctamente" });
-    }  
+    }
   } catch (error) {
     res.status(500).json({ error: error });
   }
 };
-
-function check(token: any, req: any, res: any) {
-  try {
-    var decoded = jwt.verify(token, "wrong-secret");
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-}
-
-function checktoken(token: any, req: any, res: any) {
-  try {
-    var decoded = jwt.verify(token, "wrong-secret");
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-}
 
 /*export const logout = async (req: any, res: any) => {
   try {

@@ -1,5 +1,6 @@
 import { comics } from "../models/comics";
 import jwt from "jsonwebtoken";
+const fs = require("fs");
 
 export const getComics = async (req: any, res: any) => {
   try {
@@ -30,8 +31,20 @@ export const getComicId = async (req: any, res: any) => {
 
 export const createComic = async (req: any, res: any) => {
   try {
-    const { titulo, portada,descripcion,capitulos } = req.body;
-
+    let { titulo, portada,descripcion,capitulos } = req.body;
+    let data = portada.replace(/^data:image\/\w+;base64,/, "");
+    let buf = new Buffer(data, "base64");
+    let nombreImagen = new Date().getTime() + ".png";
+    fs.writeFile(
+      "./../src/imagenes/comics/" + nombreImagen,
+      buf,
+      function (err: any, result: any) {
+        if (err) {
+          console.log("error", err);
+        }
+      }
+    );
+    portada = nombreImagen;
     const nuevoComic = await comics.create({
       titulo,
       portada,
