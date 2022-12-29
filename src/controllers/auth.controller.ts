@@ -24,7 +24,6 @@ export const getUserById = async (req: any, res: any) => {
         "./../src/imagenes/perfil/" + user.imagen,
         "base64"
       );
-      console.log(user.imagen);
       res.status(200).json({ ok: true, user });
     }
   } catch (error) {
@@ -37,16 +36,13 @@ export const getMyUser = async (req: any, res: any) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     let user: any = jwt.decode(token);
-    console.log(user);
     user = await usuarios.findOne({
       where: { nombre: user.nombre, password: user.password },
     });
-    console.log(user);
     user.imagen = fs.readFileSync(
       "./../src/imagenes/perfil/" + user.imagen,
       "base64"
     );
-    console.log(user.imagen);
     res.status(200).json({ ok: true, user });
   } catch (error) {
     res.status(500).json({ error: error });
@@ -60,7 +56,6 @@ export const changeUser = async (req: any, res: any) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     let user: any = jwt.decode(token);
-    console.log(user);
     user = await usuarios.findOne({
       where: { nombre: user.nombre, password: user.password },
     });
@@ -137,8 +132,6 @@ export const createUser = async (req: any, res: any) => {
       password,
       imagen,
     });
-    console.log(imagen);
-
     res.status(200).json({ ok: true, nuevoUsuario });
   } catch (error) {
     res.status(500).json({ error: error });
@@ -167,11 +160,3 @@ export const deleteUser = async (req: any, res: any) => {
   }
 };
 
-/*export const logout = async (req: any, res: any) => {
-  try {
-    req.session.destroy();
-    res.status(200).json({ ok: true });
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-};*/
