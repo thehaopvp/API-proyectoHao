@@ -11,13 +11,16 @@ export const usuarios = db.define(
     },
     nombre: {
       type: DataTypes.STRING,
-      unique:true
+      unique:true,
+      allowNull:false
     },
     password: {
       type: DataTypes.STRING,
+      allowNull:false
     },
     imagen: {
       type: DataTypes.STRING,
+      allowNull:false
     },
   },
   {

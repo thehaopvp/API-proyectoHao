@@ -1,7 +1,7 @@
 import { comics } from "../models/comics";
 import jwt from "jsonwebtoken";
 const fs = require("fs");
-let path = require('path');
+let path = require("path");
 
 export const getComics = async (req: any, res: any) => {
   try {
@@ -24,7 +24,7 @@ export const getComicsImg = async (req: any, res: any) => {
 export const getComicId = async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const comic:any = await comics.findOne({
+    const comic: any = await comics.findOne({
       where: { id },
     });
     if (!comic) {
@@ -45,8 +45,9 @@ export const createComic = async (req: any, res: any) => {
   try {
     let { titulo, portada, descripcion, capitulos } = req.body;
     let data = portada.replace(/^data:image\/\w+;base64,/, "");
+
     let buf = new Buffer(data, "base64");
-    let nombreImagen = new Date().getTime() + ".png";
+    let nombreImagen = new Date().getTime() + ".jpg";
     fs.writeFile(
       "./../src/imagenes/comics/" + nombreImagen,
       buf,
@@ -61,7 +62,6 @@ export const createComic = async (req: any, res: any) => {
       titulo,
       portada,
       descripcion,
-      capitulos,
     });
     res.status(200).json({ ok: true, nuevoComic });
   } catch (error) {
@@ -77,7 +77,6 @@ export const changeComic = async (req: any, res: any) => {
     comic.titulo = titulo;
     comic.portada = portada;
     comic.descripcion = descripcion;
-    comic.capitulos = capitulos;
     comic.save();
     res.status(200).json({ ok: true, comic });
   } catch (error) {

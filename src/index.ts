@@ -7,7 +7,7 @@ async function main() {
     await db.sync({ force: false });
 
     app.listen(8080);
-    console.log("Se a ejecutado correctamente sequelize");
+    console.log("Se ha ejecutado correctamente sequelize");
   } catch (error) {
     console.log(error);
   }

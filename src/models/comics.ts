@@ -11,16 +11,16 @@ export const comics = db.define(
     },
     titulo: {
       type: DataTypes.STRING,
+      allowNull:false
     },
     portada: {
       type: DataTypes.STRING,
+      allowNull:false
     },
     descripcion: {
       type: DataTypes.STRING,
-    },
-    capitulos: {
-      type: DataTypes.STRING,
-    },
+      allowNull:false
+    }
   },
   {
     timestamps: false,
