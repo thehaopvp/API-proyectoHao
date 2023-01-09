@@ -1,17 +1,18 @@
-import {getCapitulos,createCapitulos, getCapituloId,changeCapitulos,deleteCapitulos} from "../controllers/capitulos.controller";
+import {getCapitulos,createCapitulos, getCapituloId,changeCapitulos,deleteCapitulos, siguienteCapitulo, anteriorCapitulo} from "../controllers/capitulos.controller";
+import { checktAdmin } from "../utils/auth";
 const express = require("express");
 import {checktoken} from "../utils/check";
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 
 
-router.get("/",checktoken ,getCapitulos);
+router.get("/list/:id",checktoken ,getCapitulos);
 router.get("/:id",checktoken,getCapituloId);
-router.post("/",checktoken,createCapitulos);
-router.put("/:id",checktoken,changeCapitulos);
-router.delete("/:id",checktoken,deleteCapitulos);
-
-
+router.post("/",checktoken,checktAdmin,createCapitulos);
+router.put("/:id",checktoken,checktAdmin,changeCapitulos);
+router.delete("/:id",checktoken,checktAdmin,deleteCapitulos);
+router.get("/siguiente/:id",checktoken ,siguienteCapitulo);
+router.get("/anterior/:id",checktoken ,anteriorCapitulo);
 
 export default router;
 

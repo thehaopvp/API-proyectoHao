@@ -49,6 +49,25 @@ export const getMyUser = async (req: any, res: any) => {
   }
 };
 
+export const getAdmin = async (req: any, res: any) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    let user: any = jwt.decode(token);
+    user = await usuarios.findOne({
+      where: { nombre: user.nombre, password: user.password },
+    });
+    let admin :boolean;
+    if (user.role == "ADMIN" ) {
+      res.status(200).json({ ok: true, admin:true });
+    } else {
+      res.status(200).json({ ok: true, admin:false });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
 export const changeUser = async (req: any, res: any) => {
   try {
     // const { id } = req.params;
@@ -113,7 +132,7 @@ export const loginUser = async (req: any, res: any) => {
 
 export const createUser = async (req: any, res: any) => {
   try {
-    let { nombre, password, imagen } = req.body;
+    let { nombre, password, imagen ,role } = req.body;
     let data = imagen.replace(/^data:image\/\w+;base64,/, "");
     let buf = new Buffer(data, "base64");
     let nombreImagen = new Date().getTime() + ".png";
@@ -131,6 +150,7 @@ export const createUser = async (req: any, res: any) => {
       nombre,
       password,
       imagen,
+      role
     });
     res.status(200).json({ ok: true, nuevoUsuario });
   } catch (error) {
