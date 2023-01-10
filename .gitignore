@@ -1,2 +1,4 @@
 node_modules/
-src/imagenes/**/*
+src/imagenes/capitulos/*
+src/imagenes/comics/*
+src/imagenes/perfil/*

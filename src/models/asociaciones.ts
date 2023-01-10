@@ -11,6 +11,9 @@ comics.hasMany(comentarios, {
   foreignKey: "id_comic",
 });
 
-usuarios.hasMany(comentarios, {
-  foreignKey: "id_usuario",
+
+comentarios.belongsTo(usuarios, {
+  foreignKey: {
+    name: 'id_usuario'
+  }
 });

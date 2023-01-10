@@ -1,4 +1,4 @@
-import { mapFinderOptions } from "sequelize/types/utils";
+
 import { capitulos } from "../models/capitulos";
 const fs = require("fs");
 const AdmZip = require("adm-zip");
