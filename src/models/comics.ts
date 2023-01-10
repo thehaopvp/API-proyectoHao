@@ -20,7 +20,7 @@ export const comics = db.define(
     descripcion: {
       type: DataTypes.STRING,
       allowNull:false
-    }
+    },
   },
   {
     timestamps: false,

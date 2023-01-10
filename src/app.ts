@@ -2,8 +2,10 @@ import express from "express";
 import user from "./routes/user";
 import comics from "./routes/comics";
 import capitulos  from "./routes/capitulos";
+
 import "./models/asociaciones";
 import token from "./routes/token";
+import comentarios from "./routes/comentarios";
 const session = require("express-session");
 const app = express();
 const bodyParser = require("body-parser");
@@ -22,6 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/user", user);
+app.use("/comentarios", comentarios);
 app.use("/capitulos", capitulos);
 app.use("/comics", comics);
 app.use("/checktoken", token);
