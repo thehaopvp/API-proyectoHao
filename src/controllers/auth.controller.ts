@@ -57,11 +57,11 @@ export const getAdmin = async (req: any, res: any) => {
     user = await usuarios.findOne({
       where: { nombre: user.nombre, password: user.password },
     });
-    let admin :boolean;
-    if (user.role == "ADMIN" ) {
-      res.status(200).json({ ok: true, admin:true });
+    let admin: boolean;
+    if (user.role == "ADMIN") {
+      res.status(200).json({ ok: true, admin: true, user: user.id });
     } else {
-      res.status(200).json({ ok: true, admin:false });
+      res.status(200).json({ ok: true, admin: false, user: user.id });
     }
   } catch (error) {
     res.status(500).json({ error: error });
@@ -70,15 +70,12 @@ export const getAdmin = async (req: any, res: any) => {
 
 export const changeUser = async (req: any, res: any) => {
   try {
-    // const { id } = req.params;
-    // const user: any = await usuarios.findByPk(id);
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
-    let user: any = jwt.decode(token);
-    user = await usuarios.findOne({
-      where: { nombre: user.nombre, password: user.password },
-    });
+    const { id } = req.params;
     const { nombre, password, imagen } = req.body;
+    let user: any = await usuarios.findOne({
+      where: { id },
+    });
+
     let data = imagen.replace(/^data:image\/\w+;base64,/, "");
     let buf = new Buffer(data, "base64");
     let nombreImagen = new Date().getTime() + ".png";
@@ -132,7 +129,7 @@ export const loginUser = async (req: any, res: any) => {
 
 export const createUser = async (req: any, res: any) => {
   try {
-    let { nombre, password, imagen ,role } = req.body;
+    let { nombre, password, imagen, role } = req.body;
     let data = imagen.replace(/^data:image\/\w+;base64,/, "");
     let buf = new Buffer(data, "base64");
     let nombreImagen = new Date().getTime() + ".png";
@@ -150,7 +147,7 @@ export const createUser = async (req: any, res: any) => {
       nombre,
       password,
       imagen,
-      role
+      role,
     });
     res.status(200).json({ ok: true, nuevoUsuario });
   } catch (error) {
@@ -179,4 +176,3 @@ export const deleteUser = async (req: any, res: any) => {
     res.status(500).json({ error: error });
   }
 };
-

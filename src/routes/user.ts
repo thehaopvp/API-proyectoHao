@@ -19,7 +19,7 @@ router.get("/me", checktoken, getMyUser);
 router.get("/admin", checktoken, getAdmin);
 router.get("/:id", checktoken, getUserById);
 router.post("/", createUser);
-router.put("/", checktoken, changeUser);
+router.put("/:id", checktoken, changeUser);
 router.delete("/:id", checktoken, deleteUser);
 router.post("/login", loginUser);
 

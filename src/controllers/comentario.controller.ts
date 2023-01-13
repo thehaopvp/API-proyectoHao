@@ -6,9 +6,10 @@ import './../models/asociaciones';
 const fs = require("fs");
 const AdmZip = require("adm-zip");
 const unzipper = require("unzipper");
-const { Op } = require('sequelize')
+const { Op } = require('sequelize');
+let path = require("path");
 
-export const getComentario = async (req: any, res: any) => {
+export const getAllComentario = async (req: any, res: any) => {
   try {
     const { id } = req.params;
     let comentario: any = await comentarios.findAll(
@@ -26,6 +27,17 @@ export const getComentario = async (req: any, res: any) => {
     res.status(500).json({ error: error });
   }
 };
+
+
+export const getUsuarioImg = async (req: any, res: any) => {
+  try {
+    let { id } = req.params;
+    res.sendFile(path.resolve(`./../src/imagenes/perfil/` + id));
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
 
 
 export const createComentario = async (req: any, res: any) => {
